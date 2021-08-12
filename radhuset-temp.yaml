@@ -1,0 +1,43 @@
+esphome:
+  name: radhuset_temp
+  platform: ESP8266
+  board: esp01
+
+<<: !include wifi.yaml
+
+mqtt:
+  broker: aceone.se
+  username: !secret mqtt.username
+  password: !secret mqtt.password
+
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api.password
+
+ota:
+  password: !secret ota.password
+
+dallas:
+  - pin: GPIO02
+    update_interval: 30s
+
+# Dallas Sensor (ds18b20)
+sensor:
+  - platform: dallas
+    address: 0x7900000503E46428
+    name: "Basment radhuset"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0xB10000055CE0FB28
+    name: "Outside radhuset"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+

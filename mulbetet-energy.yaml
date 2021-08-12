@@ -1,0 +1,93 @@
+esphome:
+  name: mulbetet_energy
+  platform: ESP8266
+  board: d1_mini
+
+<<: !include wifi.yaml
+
+mqtt:
+  broker: aceone.se
+  username: !secret mqtt.username
+  password: !secret mqtt.password
+
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api.password
+
+ota:
+  password: !secret ota.password
+
+captive_portal:
+
+sensor:
+  - platform: pulse_counter
+    id: main_power
+    pin: 
+      number: D4
+      mode: INPUT_PULLUP
+    name: 'Power Meter Main'
+    icon: mdi:power-plug
+    unit_of_measurement: 'kW'
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.06
+
+    total:
+      id: main_energy
+      name: 'Energy Meter Main'
+      icon: mdi:flash
+      unit_of_measurement: 'Wh'
+      accuracy_decimals: 2
+      
+  - platform: pulse_counter
+    id: heater_power
+    pin: 
+      number: D3
+      mode: INPUT_PULLUP
+    name: 'Power Meter Heater'
+    icon: mdi:power-plug
+    unit_of_measurement: 'kW'
+    accuracy_decimals: 4
+    filters:
+      - multiply: 0.006
+    on_value:
+      then:
+        sensor.template.publish:
+          id: house_power
+          state: !lambda 'return id(main_power).state - id(heater_power).state;'                
+    total:
+      id: heater_energy
+      name: 'Energy Meter Heater'
+      icon: mdi:flash
+      unit_of_measurement: 'Wh'
+      accuracy_decimals: 2
+      filters:
+        - multiply: 0.1        
+      on_value:
+        then:
+          - logger.log:
+              format: "main_energy value: %.4f and heater_energy: %.4f"
+              args: [ 'id(main_energy).state', 'id(heater_energy).state' ]
+          - sensor.template.publish:
+              id: house_energy
+              state: !lambda 'return id(main_energy).state - id(heater_energy).state;'                
+            
+  - platform: template 
+    id: house_power
+    name: 'Power Meter House'
+    icon: mdi:power-plug
+    unit_of_measurement: 'kW' 
+    accuracy_decimals: 4
+    update_interval: never
+     
+  - platform: template 
+    id: house_energy
+    name: 'Energy Meter House'
+    icon: mdi:flash
+    unit_of_measurement: 'Wh' 
+    accuracy_decimals: 2
+    update_interval: never
