@@ -6,6 +6,9 @@ wifi:
   - ssid: "C64"
     password: !secret wifi.networks.password
     priority: 1.0
+  - ssid: "C64_things"
+    password: !secret wifi.networks.password.things
+    priority: 2.0
   - ssid: "Telia-EDF8D1"
     password: !secret wifi.networks.password.yxlan
     priority: 2.0

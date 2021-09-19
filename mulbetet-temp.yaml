@@ -1,0 +1,57 @@
+esphome:
+  name: mulbetet_temp
+  platform: ESP8266
+  board: esp01
+
+<<: !include wifi.yaml
+
+mqtt:
+  broker: aceone.se
+  username: !secret mqtt.username
+  password: !secret mqtt.password
+
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  password: !secret api.password
+
+ota:
+  password: !secret ota.password
+
+dallas:
+  - pin: GPIO02
+    update_interval: 30s
+
+# Dallas Sensor (ds18b20)
+sensor:
+  - platform: dallas
+    address: 0x10EFD25B0208005E
+    name: "Livingroom"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0x28FF3E4C310400D2
+    name: "Sauna"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0x1064BC5B020800FF
+    name: "Basment"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0x1053C65B02080047
+    name: "Outside"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
