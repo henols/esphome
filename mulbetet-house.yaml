@@ -1,5 +1,5 @@
 esphome:
-  name: mulbetet_energy
+  name: mulbetet_house
   platform: ESP8266
   board: d1_mini
 
@@ -21,13 +21,15 @@ api:
 ota:
   password: !secret ota.password
 
-captive_portal:
-
+dallas:
+  - pin: D1
+    update_interval: 30s
+    
 sensor:
   - platform: pulse_counter
     id: main_power
     pin: 
-      number: D4
+      number: D2
       mode: INPUT_PULLUP
     name: 'Power Meter Main'
     icon: mdi:power-plug
@@ -91,3 +93,31 @@ sensor:
     unit_of_measurement: 'Wh' 
     accuracy_decimals: 2
     update_interval: never
+
+  - platform: dallas
+    address: 0x5E0008025BD2EF10
+    name: "Livingroom"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0x28FF3E4C310400D2
+    name: "Sauna"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0xFF0008025BBC6410
+    name: "Basment"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
+  - platform: dallas
+    address: 0x470008025BC65310
+    name: "Outside"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
