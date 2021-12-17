@@ -1,5 +1,5 @@
 esphome:
-  name: radhuset_temp
+  name: radhuset-temp
   platform: ESP8266
   board: esp01
 
@@ -22,22 +22,38 @@ ota:
   password: !secret ota.password
 
 dallas:
-  - pin: GPIO02
+  - pin: GPIO00
     update_interval: 30s
+
+
+# [11:21:07][D][dallas.sensor:082]:     0xD6031702E676FF28
+# [11:21:07][D][dallas.sensor:082]:     0x11031702EE25FF28
+# [11:21:07][D][dallas.sensor:082]:     0xF3041702D52FFF28
 
 # Dallas Sensor (ds18b20)
 sensor:
   - platform: dallas
-    address: 0x7900000503E46428
-    name: "Basment radhuset"
+    address: 0x11031702EE25FF28
+    name: "Staircase radhuset"
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
 
   - platform: dallas
-    address: 0xB10000055CE0FB28
+    address: 0xD6031702E676FF28
     name: "Outside radhuset"
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
+    filters:
+      - lambda: |-
+          if (x < 85.0) return x;
+          else return {};
+  - platform: dallas
+    address: 0xF3041702D52FFF28
+    name: "Basement radhuset"
+    resolution: 10
+    unit_of_measurement: °C
+    accuracy_decimals: 2
+
 

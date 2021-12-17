@@ -1,5 +1,5 @@
 esphome:
-  name: mulbetet_house
+  name: mulbetet
   platform: ESP8266
   board: d1_mini
 
@@ -27,30 +27,39 @@ dallas:
     
 sensor:
   - platform: pulse_counter
-    id: main_power
+    # update_interval: never
+    id: mainPower
+    device_class: power
     pin: 
       number: D2
       mode: INPUT_PULLUP
-    name: 'Power Meter Main'
+    name: 'Main Power'
     icon: mdi:power-plug
     unit_of_measurement: 'kW'
     accuracy_decimals: 4
     filters:
       - multiply: 0.06
-
     total:
-      id: main_energy
-      name: 'Energy Meter Main'
+      id: mainEnergy
+      device_class: energy
+      name: 'Main Energy'
       icon: mdi:flash
       unit_of_measurement: 'Wh'
       accuracy_decimals: 2
-      
+      filters:
+        - multiply: 1
+      on_value:
+        then:
+          - component.update: heaterPower
+        
   - platform: pulse_counter
-    id: heater_power
+    update_interval: never
+    id: heaterPower
+    device_class: power
     pin: 
       number: D3
       mode: INPUT_PULLUP
-    name: 'Power Meter Heater'
+    name: 'Heater Power'
     icon: mdi:power-plug
     unit_of_measurement: 'kW'
     accuracy_decimals: 4
@@ -58,12 +67,17 @@ sensor:
       - multiply: 0.006
     on_value:
       then:
-        sensor.template.publish:
-          id: house_power
-          state: !lambda 'return id(main_power).state - id(heater_power).state;'                
+        # - component.update: mainPower
+        - logger.log:
+            format: "main power value: %.4f and heater power: %.4f"
+            args: [ 'id(mainPower).state', 'id(heaterPower).state' ]
+        - sensor.template.publish:
+            id: housePower
+            state: !lambda 'return id(mainPower).state - id(heaterPower).state;'                
     total:
-      id: heater_energy
-      name: 'Energy Meter Heater'
+      id: heaterEnergy
+      device_class: energy
+      name: 'Heater Energy'
       icon: mdi:flash
       unit_of_measurement: 'Wh'
       accuracy_decimals: 2
@@ -72,27 +86,41 @@ sensor:
       on_value:
         then:
           - logger.log:
-              format: "main_energy value: %.4f and heater_energy: %.4f"
-              args: [ 'id(main_energy).state', 'id(heater_energy).state' ]
+              format: "main_energy value: %.2f and heater_energy: %.2f"
+              args: [ 'id(mainEnergy).state', 'id(heaterEnergy).state' ]
           - sensor.template.publish:
-              id: house_energy
-              state: !lambda 'return id(main_energy).state - id(heater_energy).state;'                
+              id: houseEnergy
+              state: !lambda 'return id(mainEnergy).state - id(heaterEnergy).state;'                
             
   - platform: template 
-    id: house_power
-    name: 'Power Meter House'
+    id: housePower
+    device_class: power
+    state_class: 'measurement'
+    name: 'House Power'
     icon: mdi:power-plug
     unit_of_measurement: 'kW' 
     accuracy_decimals: 4
     update_interval: never
+    on_value:
+      then:
+        - logger.log:
+            format: "house_power value: %.4f"
+            args: ['x' ]
      
   - platform: template 
-    id: house_energy
-    name: 'Energy Meter House'
+    id: houseEnergy
+    device_class: energy
+    state_class: 'measurement'
+    name: 'House Energy'
     icon: mdi:flash
     unit_of_measurement: 'Wh' 
     accuracy_decimals: 2
     update_interval: never
+    on_value:
+      then:
+        - logger.log:
+            format: "house_energy value: %.2f"
+            args: [ 'x' ]
 
   - platform: dallas
     address: 0x5E0008025BD2EF10
@@ -100,6 +128,8 @@ sensor:
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
+    filters:
+      - lambda: if(x<85){return x;} else return {};
 
   - platform: dallas
     address: 0x28FF3E4C310400D2
@@ -107,13 +137,18 @@ sensor:
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
+    filters:
+      - lambda: if(x<85){return x;} else return {};
 
   - platform: dallas
     address: 0xFF0008025BBC6410
-    name: "Basment"
+    # address: 0xFF0008025BBC6410
+    name: "Basement"
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
+    filters:
+      - lambda: if(x<85){return x;} else return {};
 
   - platform: dallas
     address: 0x470008025BC65310
@@ -121,3 +156,5 @@ sensor:
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
+    filters:
+      - lambda: if(x<85){return x;} else return {};
