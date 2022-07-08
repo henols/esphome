@@ -1,0 +1,173 @@
+esphome:
+  name: "mulbetet-p1reader"
+  platform: ESP8266
+  board: d1_mini
+  includes:
+    - p1reader.h
+
+wifi:
+  networks:
+  - ssid: "aceone"
+    password: !secret wifi.networks.password
+    priority: 2.0
+  # - ssid: "C64"
+  #   password: !secret wifi.networks.password
+  #   priority: 1.0
+  - ssid: "C64_things"
+    password: !secret wifi.networks.password.things
+    priority: 2.0
+  
+ # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    password: !secret wifi.ap.password
+
+  # manual_ip:
+  #   static_ip: 192.168.5.6
+  #   gateway: 192.168.5.1
+  #   subnet: 255.255.255.0
+  #   dns1: 8.8.8.8
+  #   dns2: 8.8.4.4
+
+mqtt:
+  broker: aceone.se
+  username: !secret mqtt.username
+  password: !secret mqtt.password
+  discovery: true
+
+captive_portal:
+
+# Enable logging
+logger:
+  level: DEBUG
+  baud_rate: 0 # disable logging over uart
+  
+# Enable Home Assistant API
+api:
+  password: !secret api.password
+
+ota:
+  password: !secret ota.password
+
+
+uart:
+  id: uart_bus
+  tx_pin: TX
+  rx_pin: RX
+  baud_rate: 115200
+  
+sensor:
+- platform: custom
+  lambda: |-
+    auto meter_sensor = new P1Reader(id(uart_bus));
+    App.register_component(meter_sensor);
+    return {
+      meter_sensor->cumulativeActiveImport,
+      meter_sensor->cumulativeActiveExport,
+      meter_sensor->cumulativeReactiveImport,
+      meter_sensor->cumulativeReactiveExport,
+      meter_sensor->momentaryActiveImport,
+      meter_sensor->momentaryActiveExport,
+      meter_sensor->momentaryReactiveImport,
+      meter_sensor->momentaryReactiveExport,
+      meter_sensor->momentaryActiveImportL1,
+      meter_sensor->momentaryActiveExportL1,
+      meter_sensor->momentaryActiveImportL2,
+      meter_sensor->momentaryActiveExportL2,
+      meter_sensor->momentaryActiveImportL3,
+      meter_sensor->momentaryActiveExportL3,
+      meter_sensor->momentaryReactiveImportL1,
+      meter_sensor->momentaryReactiveExportL1,
+      meter_sensor->momentaryReactiveImportL2,
+      meter_sensor->momentaryReactiveExportL2,
+      meter_sensor->momentaryReactiveImportL3,
+      meter_sensor->momentaryReactiveExportL3,
+      meter_sensor->voltageL1,
+      meter_sensor->voltageL2,
+      meter_sensor->voltageL3,
+      meter_sensor->currentL1,
+      meter_sensor->currentL2,
+      meter_sensor->currentL3
+    };
+  sensors:
+  - name: "Cumulative Active Import"
+    unit_of_measurement: kWh
+    accuracy_decimals: 3
+    state_class: "total_increasing"
+    device_class: "energy"
+  - name: "Cumulative Active Export"
+    unit_of_measurement: kWh
+    accuracy_decimals: 3
+    state_class: "total_increasing"
+    device_class: "energy"
+  - name: "Cumulative Reactive Import"
+    unit_of_measurement: kvarh
+    accuracy_decimals: 3
+  - name: "Cumulative Reactive Export"
+    unit_of_measurement: kvarh
+    accuracy_decimals: 3
+  - name: "Momentary Active Import"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Active Export"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Import"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Export"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Active Import Phase 1"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Active Export Phase 1"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Active Import Phase 2"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Active Export Phase 2"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Active Import Phase 3"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Active Export Phase 3"
+    unit_of_measurement: kW
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Import Phase 1"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Export Phase 1"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Import Phase 2"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Export Phase 2"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Import Phase 3"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Momentary Reactive Export Phase 3"
+    unit_of_measurement: kvar
+    accuracy_decimals: 3
+  - name: "Voltage Phase 1"
+    unit_of_measurement: V
+    accuracy_decimals: 3
+  - name: "Voltage Phase 2"
+    unit_of_measurement: V
+    accuracy_decimals: 3
+  - name: "Voltage Phase 3"
+    unit_of_measurement: V
+    accuracy_decimals: 3
+  - name: "Current Phase 1"
+    unit_of_measurement: A
+    accuracy_decimals: 3
+  - name: "Current Phase 2"
+    unit_of_measurement: A
+    accuracy_decimals: 3
+  - name: "Current Phase 3"
+    unit_of_measurement: A
+    accuracy_decimals: 3

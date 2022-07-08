@@ -3,7 +3,28 @@ esphome:
   platform: ESP8266
   board: d1_mini
 
-<<: !include wifi.yaml
+wifi:
+  networks:
+  - ssid: "aceone"
+    password: !secret wifi.networks.password
+    priority: 2.0
+  # - ssid: "C64"
+  #   password: !secret wifi.networks.password
+  #   priority: 1.0
+  - ssid: "C64_things"
+    password: !secret wifi.networks.password.things
+    priority: 2.0
+  
+ # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    password: !secret wifi.ap.password
+
+  manual_ip:
+    static_ip: 192.168.5.5
+    gateway: 192.168.5.1
+    subnet: 255.255.255.0
+    dns1: 8.8.8.8
+    dns2: 8.8.4.4
 
 mqtt:
   broker: aceone.se
@@ -27,35 +48,7 @@ dallas:
     
 sensor:
   - platform: pulse_counter
-    # update_interval: never
-    id: mainPower
-    device_class: power
-    pin: 
-      number: D2
-      mode: INPUT_PULLUP
-    name: 'Main Power'
-    icon: mdi:power-plug
-    unit_of_measurement: 'kW'
-    accuracy_decimals: 4
-    filters:
-      - multiply: 0.06
-    total:
-      id: mainEnergy
-      device_class: energy
-      name: 'Main Energy'
-      icon: mdi:flash
-      unit_of_measurement: 'Wh'
-      accuracy_decimals: 2
-      filters:
-        - multiply: 1
-      on_value:
-        then:
-          - component.update: heaterPower
-        
-  - platform: pulse_counter
-    update_interval: never
-    id: heaterPower
-    device_class: power
+    id: heater_power
     pin: 
       number: D3
       mode: INPUT_PULLUP
@@ -65,15 +58,6 @@ sensor:
     accuracy_decimals: 4
     filters:
       - multiply: 0.006
-    on_value:
-      then:
-        # - component.update: mainPower
-        - logger.log:
-            format: "main power value: %.4f and heater power: %.4f"
-            args: [ 'id(mainPower).state', 'id(heaterPower).state' ]
-        - sensor.template.publish:
-            id: housePower
-            state: !lambda 'return id(mainPower).state - id(heaterPower).state;'                
     total:
       id: heaterEnergy
       device_class: energy
@@ -83,44 +67,6 @@ sensor:
       accuracy_decimals: 2
       filters:
         - multiply: 0.1        
-      on_value:
-        then:
-          - logger.log:
-              format: "main_energy value: %.2f and heater_energy: %.2f"
-              args: [ 'id(mainEnergy).state', 'id(heaterEnergy).state' ]
-          - sensor.template.publish:
-              id: houseEnergy
-              state: !lambda 'return id(mainEnergy).state - id(heaterEnergy).state;'                
-            
-  - platform: template 
-    id: housePower
-    device_class: power
-    state_class: 'measurement'
-    name: 'House Power'
-    icon: mdi:power-plug
-    unit_of_measurement: 'kW' 
-    accuracy_decimals: 4
-    update_interval: never
-    on_value:
-      then:
-        - logger.log:
-            format: "house_power value: %.4f"
-            args: ['x' ]
-     
-  - platform: template 
-    id: houseEnergy
-    device_class: energy
-    state_class: 'measurement'
-    name: 'House Energy'
-    icon: mdi:flash
-    unit_of_measurement: 'Wh' 
-    accuracy_decimals: 2
-    update_interval: never
-    on_value:
-      then:
-        - logger.log:
-            format: "house_energy value: %.2f"
-            args: [ 'x' ]
 
   - platform: dallas
     address: 0x5E0008025BD2EF10
