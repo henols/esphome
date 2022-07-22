@@ -1,5 +1,5 @@
 esphome:
-  name: "mulbetet-p1reader"
+  name: "radhuset-p1reader"
   platform: ESP8266
   board: d1_mini
   includes:
@@ -10,6 +10,9 @@ wifi:
   - ssid: "aceone"
     password: !secret wifi.networks.password
     priority: 2.0
+  - ssid: "radhuset"
+    password: !secret wifi.networks.password
+    priority: 1.0
   # - ssid: "C64"
   #   password: !secret wifi.networks.password
   #   priority: 1.0
@@ -22,8 +25,8 @@ wifi:
     password: !secret wifi.ap.password
 
   manual_ip:
-    static_ip: 192.168.5.6
-    gateway: 192.168.5.1
+    static_ip: 192.168.10.6
+    gateway: 192.168.10.1
     subnet: 255.255.255.0
     dns1: 8.8.8.8
     dns2: 8.8.4.4
