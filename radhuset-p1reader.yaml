@@ -36,6 +36,7 @@ mqtt:
   username: !secret mqtt.username
   password: !secret mqtt.password
   discovery: true
+  discovery_unique_id_generator: mac
 
 captive_portal:
 
