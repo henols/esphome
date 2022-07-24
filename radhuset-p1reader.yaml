@@ -7,19 +7,10 @@ esphome:
 
 wifi:
   networks:
-  - ssid: "aceone"
-    password: !secret wifi.networks.password
-    priority: 2.0
   - ssid: "radhuset"
-    password: !secret wifi.networks.password
-    priority: 1.0
-  # - ssid: "C64"
-  #   password: !secret wifi.networks.password
-  #   priority: 1.0
-  - ssid: "C64_things"
-    password: !secret wifi.networks.password.things
+    password: "feelgood"
     priority: 2.0
-  
+
  # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     password: !secret wifi.ap.password
