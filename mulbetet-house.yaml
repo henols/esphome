@@ -63,10 +63,10 @@ sensor:
       device_class: energy
       name: 'Heater Energy'
       icon: mdi:flash
-      unit_of_measurement: 'Wh'
+      unit_of_measurement: 'kWh'
       accuracy_decimals: 2
       filters:
-        - multiply: 0.1        
+        - multiply: 0.0001        
 
   - platform: dallas
     address: 0x5E0008025BD2EF10

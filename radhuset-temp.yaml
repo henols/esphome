@@ -4,6 +4,18 @@ esphome:
   board: esp01
 
 <<: !include wifi.yaml
+wifi:
+  networks:
+  - ssid: "radhuset"
+    password: "feelgood"
+    priority: 2.0
+
+  manual_ip:
+    static_ip: 192.168.10.5
+    gateway: 192.168.10.1
+    subnet: 255.255.255.0
+    dns1: 8.8.8.8
+    dns2: 8.8.4.4
 
 mqtt:
   broker: aceone.se
