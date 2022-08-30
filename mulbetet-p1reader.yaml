@@ -37,6 +37,8 @@ mqtt:
 
 captive_portal:
 
+web_server:
+
 # Enable logging
 logger:
   level: DEBUG

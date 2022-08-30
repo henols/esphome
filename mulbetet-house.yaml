@@ -42,6 +42,8 @@ api:
 ota:
   password: !secret ota.password
 
+web_server:
+
 dallas:
   - pin: D1
     update_interval: 30s
