@@ -1,0 +1,35 @@
+wifi:
+  networks:
+  - ssid: "aceone"
+    password: !secret wifi.networks.password
+    priority: 2.0
+  - ssid: $wifi_ssid
+    password: $wifi_password
+    priority: 2.0
+  
+ # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    password: !secret wifi.ap.password
+
+  manual_ip:
+    static_ip: $ip_address
+    gateway: 192.168.5.1
+    subnet: 255.255.255.0
+    dns1: 8.8.8.8
+    dns2: 8.8.4.4
+
+mqtt:
+  broker: aceone.se
+  username: !secret mqtt.username
+  password: !secret mqtt.password
+
+
+# Enable Home Assistant API
+api:
+#  password: !secret api.password
+  encryption:
+    key: !secret api.encryption.key
+
+ota:
+  password: !secret ota.password
+

@@ -1,0 +1,57 @@
+substitutions:
+  name: heatpump-control
+  platform: ESP8266
+  board: esp01_1m
+  wifi_ssid: "C64_things"
+  wifi_password: !secret wifi.networks.password.things
+  ip_address: 192.168.5.9
+
+esphome:
+  name: $name
+  platform: $platform
+  board: $board
+
+<<: !include common.yaml
+
+# Enable logging
+logger:
+  level: DEBUG
+  # baud_rate: 0
+
+
+web_server:
+
+switch:
+  - platform: gpio
+    pin: 4
+    name: "Disable loads"
+    restore_mode:  RESTORE_DEFAULT_OFF
+  - platform: gpio
+    pin: 
+      number: 16
+      inverted: true
+    id: led
+
+status_led:
+  pin: 2
+
+interval:
+  - interval: 1s
+    then:
+      if:
+        condition:
+          mqtt.connected:
+        then:
+        - switch.turn_on: led
+        else:
+          if:
+            condition:
+              mqtt.connected:
+            then:
+            - switch.turn_on: led
+            - delay: 500ms
+            - switch.turn_off: led
+            else:
+            - switch.turn_on: led
+            - delay: 100ms
+            - switch.turn_off: led

@@ -1,41 +1,22 @@
-esphome:
-  name: "mulbetet-p1reader"
+substitutions:
+  name: mulbetet-p1reader
   platform: ESP8266
   board: d1_mini
+  wifi_ssid: "C64_things"
+  wifi_password: !secret wifi.networks.password.things
+  ip_address: 192.168.5.6
+
+esphome:
+  name: $name
+  platform: $platform
+  board: $board
   includes:
     - p1reader.h
+    
+<<: !include common.yaml
 
-wifi:
-  networks:
-  - ssid: "aceone"
-    password: !secret wifi.networks.password
-    priority: 2.0
-  # - ssid: "C64"
-  #   password: !secret wifi.networks.password
-  #   priority: 1.0
-  - ssid: "C64_things"
-    password: !secret wifi.networks.password.things
-    priority: 2.0
-  
- # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    password: !secret wifi.ap.password
-
-  manual_ip:
-    static_ip: 192.168.5.6
-    gateway: 192.168.5.1
-    subnet: 255.255.255.0
-    dns1: 8.8.8.8
-    dns2: 8.8.4.4
-
-mqtt:
-  broker: aceone.se
-  username: !secret mqtt.username
-  password: !secret mqtt.password
-  discovery: true
-  discovery_unique_id_generator: mac
-
-captive_portal:
+status_led:
+  pin: 2
 
 web_server:
 
@@ -44,14 +25,6 @@ logger:
   level: DEBUG
   baud_rate: 0 # disable logging over uart
   
-# Enable Home Assistant API
-api:
-  password: !secret api.password
-
-ota:
-  password: !secret ota.password
-
-
 uart:
   id: uart_bus
   tx_pin: TX

@@ -1,48 +1,30 @@
-esphome:
-  name: mulbetet
+substitutions:
+  name: mulbetet-house
   platform: ESP8266
   board: d1_mini
+  wifi_ssid: "C64_things"
+  wifi_password: !secret wifi.networks.password.things
+  ip_address: 192.168.5.5
 
-wifi:
-  networks:
-  - ssid: "aceone"
-    password: !secret wifi.networks.password
-    priority: 2.0
-  # - ssid: "C64"
-  #   password: !secret wifi.networks.password
-  #   priority: 1.0
-  - ssid: "C64_things"
-    password: !secret wifi.networks.password.things
-    priority: 2.0
-  
- # Enable fallback hotspot (captive portal) in case wifi connection fails
-  ap:
-    password: !secret wifi.ap.password
+esphome:
+  name: $name
+  platform: $platform
+  board: $board
 
-  manual_ip:
-    static_ip: 192.168.5.5
-    gateway: 192.168.5.1
-    subnet: 255.255.255.0
-    dns1: 8.8.8.8
-    dns2: 8.8.4.4
-
-mqtt:
-  broker: aceone.se
-  username: !secret mqtt.username
-  password: !secret mqtt.password
-
+<<: !include common.yaml
 
 # Enable logging
 logger:
+  level: DEBUG
 
-# Enable Home Assistant API
-api:
-  password: !secret api.password
+web_server:
 
 ota:
   password: !secret ota.password
 
-web_server:
+
+status_led:
+  pin: 2
 
 dallas:
   - pin: D1
@@ -68,6 +50,7 @@ sensor:
       unit_of_measurement: 'kWh'
       accuracy_decimals: 2
       filters:
+        - filter_out: nan
         - multiply: 0.0001        
 
   - platform: dallas
@@ -77,6 +60,7 @@ sensor:
     unit_of_measurement: °C
     accuracy_decimals: 2
     filters:
+      - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
 
   - platform: dallas
@@ -86,6 +70,7 @@ sensor:
     unit_of_measurement: °C
     accuracy_decimals: 2
     filters:
+      - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
 
   - platform: dallas
@@ -96,6 +81,7 @@ sensor:
     unit_of_measurement: °C
     accuracy_decimals: 2
     filters:
+      - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
 
   - platform: dallas
@@ -105,4 +91,5 @@ sensor:
     unit_of_measurement: °C
     accuracy_decimals: 2
     filters:
+      - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
