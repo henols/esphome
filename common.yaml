@@ -18,6 +18,9 @@ wifi:
     dns1: 8.8.8.8
     dns2: 8.8.4.4
 
+web_server:
+captive_portal:
+
 mqtt:
   broker: aceone.se
   username: !secret mqtt.username
@@ -31,5 +34,5 @@ api:
     key: !secret api.encryption.key
 
 ota:
-  password: !secret ota.password
-
+  - platform: esphome
+    password: !secret ota.password

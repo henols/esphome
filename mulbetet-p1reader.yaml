@@ -12,24 +12,27 @@ esphome:
   board: $board
   includes:
     - p1reader.h
+    - parsed_message.h
+    - p1reader_base.h
     
 <<: !include common.yaml
 
 status_led:
   pin: 2
 
-web_server:
 
 # Enable logging
 logger:
-  level: DEBUG
-  baud_rate: 0 # disable logging over uart
+  level: INFO  # Logging costs performnce, switch to DEBUG when needed only
+  baud_rate: 0 # disable logging over uart (would use up a HW uart)
+  esp8266_store_log_strings_in_flash: false # Avoid flash wear and tear
   
 uart:
   id: uart_bus
   tx_pin: TX
   rx_pin: RX
   baud_rate: 115200
+  rx_buffer_size: 3072
 
 sensor:
 - platform: custom

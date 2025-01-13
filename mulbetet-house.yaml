@@ -17,18 +17,13 @@ esphome:
 logger:
   level: DEBUG
 
-web_server:
-
-ota:
-  password: !secret ota.password
-
-
 status_led:
   pin: 2
 
-dallas:
-  - pin: D1
-    update_interval: 30s
+one_wire:
+  - platform: gpio
+    pin: D1
+    # update_interval: 30s
     
 sensor:
   - platform: pulse_counter
@@ -37,6 +32,7 @@ sensor:
       number: D3
       mode: INPUT_PULLUP
     name: 'Heater Power'
+    update_interval: 30s
     icon: mdi:power-plug
     unit_of_measurement: 'kW'
     accuracy_decimals: 4
@@ -53,9 +49,10 @@ sensor:
         - filter_out: nan
         - multiply: 0.0001        
 
-  - platform: dallas
+  - platform: dallas_temp
     address: 0x5E0008025BD2EF10
     name: "Livingroom"
+    update_interval: 30s
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
@@ -63,9 +60,10 @@ sensor:
       - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
 
-  - platform: dallas
+  - platform: dallas_temp
     address: 0x28FF3E4C310400D2
     name: "Sauna"
+    update_interval: 30s
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
@@ -73,10 +71,11 @@ sensor:
       - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
 
-  - platform: dallas
+  - platform: dallas_temp
     address: 0xFF0008025BBC6410
     # address: 0xFF0008025BBC6410
     name: "Basement"
+    update_interval: 30s
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2
@@ -84,9 +83,10 @@ sensor:
       - filter_out: nan
       - lambda: if(x<85){return x;} else return {};
 
-  - platform: dallas
+  - platform: dallas_temp
     address: 0x470008025BC65310
     name: "Outside"
+    update_interval: 30s
     resolution: 10
     unit_of_measurement: °C
     accuracy_decimals: 2

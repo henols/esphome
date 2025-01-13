@@ -4,6 +4,8 @@ esphome:
   board: d1_mini
   includes:
     - p1reader.h
+    - parsed_message.h
+    - p1reader_base.h
 
 wifi:
   networks:
@@ -29,27 +31,34 @@ mqtt:
   discovery: true
   discovery_unique_id_generator: mac
 
+web_server:
 captive_portal:
 
-# Enable logging
-logger:
-  level: DEBUG
-  baud_rate: 0 # disable logging over uart
-  
 # Enable Home Assistant API
 api:
   password: !secret api.password
 
 ota:
-  password: !secret ota.password
+  - platform: esphome
+    password: !secret ota.password
 
+status_led:
+  pin: 2
+
+# Enable logging
+logger:
+  level: INFO  # Logging costs performnce, switch to DEBUG when needed only
+  baud_rate: 0 # disable logging over uart (would use up a HW uart)
+  esp8266_store_log_strings_in_flash: false # Avoid flash wear and tear
+  
 
 uart:
   id: uart_bus
   tx_pin: TX
   rx_pin: RX
   baud_rate: 115200
-  
+  rx_buffer_size: 3072
+
 sensor:
 - platform: custom
   lambda: |-
